@@ -1,4 +1,79 @@
-# Syntax analyzer for XML 
+# XML Syntax Analyzer
 
-A simple syntax analyzer,that recognizes XML syntax and returns syntax errors.
-Writen in c and using flex and bison for syntax and grammar analysis.
+A syntax analyzer that validates XML documents and reports syntax errors. Built with Flex (lexical analysis) and Bison (grammar/parser), it implements a formal BNF grammar for XML and provides meaningful error messages for malformed input.
+
+## Tech Stack
+
+- **Language:** C
+- **Lexer:** Flex (`lexical_analyzer.l`)
+- **Parser:** Bison (`parser.y`)
+- **Grammar:** BNF specification (`BNF.bnf`)
+- **Build:** GNU Make
+
+## Architecture Overview
+
+```mermaid
+flowchart LR
+    XML[XML Input File] --> FLEX[Flex Lexer\nlexical_analyzer.l\ntokenize tags attributes text]
+    FLEX --> TOKENS[Token Stream\nTAG ATTR VALUE TEXT CDATA ...]
+    TOKENS --> BISON[Bison Parser\nparser.y\nvalidate grammar rules]
+    BISON --> OK[Valid XML\n✓ No errors]
+    BISON --> ERR[Syntax Errors\nline number + description]
+```
+
+## Project Structure
+
+```
+Syntax-Analyzer-of-XML/
+├── BNF.bnf                     # Formal BNF grammar for XML
+├── README.md
+└── code/
+    ├── lexical_analyzer.l      # Flex lexer rules (tokenize XML)
+    ├── parser.y                # Bison grammar + semantic actions
+    ├── helper.h                # Shared type definitions and helpers
+    ├── XML_input.xml           # Test case 1
+    ├── Second_XML_input.xml    # Test case 2
+    └── Makefile                # Build rules
+```
+
+## How to Build and Run
+
+### Build
+
+```bash
+cd code
+make
+```
+
+This runs `flex` on `lexical_analyzer.l`, `bison` on `parser.y`, and compiles the resulting C files into the `xml_analyzer` binary.
+
+### Run
+
+```bash
+./xml_analyzer < XML_input.xml
+./xml_analyzer < Second_XML_input.xml
+```
+
+### Manual build steps
+
+```bash
+flex lexical_analyzer.l          # generates lex.yy.c
+bison -d parser.y                # generates parser.tab.c + parser.tab.h
+gcc -o xml_analyzer lex.yy.c parser.tab.c -lfl -lm
+```
+
+## XML Grammar (Summary)
+
+The BNF grammar covers:
+- Document structure: `<?xml ... ?>` prolog + root element
+- Elements: opening/closing tags with optional attributes
+- Attributes: `name="value"` pairs
+- Text content and CDATA sections
+- Nested elements (recursive grammar rules)
+- Self-closing tags (`<tag />`)
+
+## Notes
+
+- The analyzer reports the line number and a description of each syntax error encountered.
+- Two sample XML files are included for testing both valid and invalid documents.
+- The grammar is implemented as a context-free grammar in Bison; XML namespace support is not included.
