@@ -77,3 +77,4 @@ The BNF grammar covers:
 - The analyzer reports the line number and a description of each syntax error encountered.
 - Two sample XML files are included for testing both valid and invalid documents.
 - The grammar is implemented as a context-free grammar in Bison; XML namespace support is not included.
+
