@@ -5,7 +5,7 @@ A syntax analyzer that validates XML documents and reports syntax errors. Built 
 ## Tech Stack
 
 - **Language:** C
-- **Lexer:** Flex (`lexical_analyzer.l`)
+- **Lexer:** Flex (`src/lexer.l`)
 - **Parser:** Bison (`parser.y`)
 - **Grammar:** BNF specification (`BNF.bnf`)
 - **Build:** GNU Make
@@ -14,7 +14,7 @@ A syntax analyzer that validates XML documents and reports syntax errors. Built 
 
 ```mermaid
 flowchart LR
-    XML[XML Input File] --> FLEX[Flex Lexer\nlexical_analyzer.l\ntokenize tags attributes text]
+    XML[XML Input File] --> FLEX[Flex Lexer\nlexer.l\ntokenize tags attributes text]
     FLEX --> TOKENS[Token Stream\nTAG ATTR VALUE TEXT CDATA ...]
     TOKENS --> BISON[Bison Parser\nparser.y\nvalidate grammar rules]
     BISON --> OK[Valid XML\n✓ No errors]
@@ -24,16 +24,16 @@ flowchart LR
 ## Project Structure
 
 ```
-Syntax-Analyzer-of-XML/
-├── BNF.bnf                     # Formal BNF grammar for XML
-├── README.md
-└── code/
-    ├── lexical_analyzer.l      # Flex lexer rules (tokenize XML)
-    ├── parser.y                # Bison grammar + semantic actions
-    ├── helper.h                # Shared type definitions and helpers
-    ├── XML_input.xml           # Test case 1
-    ├── Second_XML_input.xml    # Test case 2
-    └── Makefile                # Build rules
+xml-parser/
+├── BNF.bnf                 # Formal BNF grammar for XML
+├── src/
+│   ├── lexer.l             # Flex lexer rules (tokenize XML)
+│   ├── parser.y            # Bison grammar + semantic actions
+│   ├── helper.h            # Shared type definitions and helpers
+│   └── Makefile            # Build rules
+└── examples/
+    ├── example1.xml        # Test case 1
+    └── example2.xml        # Test case 2
 ```
 
 ## How to Build and Run
@@ -41,23 +41,23 @@ Syntax-Analyzer-of-XML/
 ### Build
 
 ```bash
-cd code
+cd src
 make
 ```
 
-This runs `flex` on `lexical_analyzer.l`, `bison` on `parser.y`, and compiles the resulting C files into the `xml_analyzer` binary.
+This runs `flex` on `lexer.l`, `bison` on `parser.y`, and compiles the resulting C files into the `xml_analyzer` binary.
 
 ### Run
 
 ```bash
-./xml_analyzer < XML_input.xml
-./xml_analyzer < Second_XML_input.xml
+./xml_analyzer < ../examples/example1.xml
+./xml_analyzer < ../examples/example2.xml
 ```
 
 ### Manual build steps
 
 ```bash
-flex lexical_analyzer.l          # generates lex.yy.c
+flex lexer.l          # generates lex.yy.c
 bison -d parser.y                # generates parser.tab.c + parser.tab.h
 gcc -o xml_analyzer lex.yy.c parser.tab.c -lfl -lm
 ```
